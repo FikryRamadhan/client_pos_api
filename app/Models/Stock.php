@@ -14,11 +14,40 @@ class Stock extends Model
         'note',
     ];
 
-    public function product(){
+    protected static function booted()
+    {
+        static::created(function ($stock) {
+            self::updateProductStock($stock->product_id);
+        });
+
+        static::updated(function ($stock) {
+            self::updateProductStock($stock->product_id);
+        });
+
+        static::deleted(function ($stock) {
+            self::updateProductStock($stock->product_id);
+        });
+    }
+
+    protected static function updateProductStock($productId)
+    {
+        $stockIn = self::where('product_id', $productId)->where('type', 'in')->sum('quantity');
+        $stockOut = self::where('product_id', $productId)->where('type', 'out')->sum('quantity');
+
+        $product = Product::find($productId);
+        if ($product) {
+            $product->stock = $stockIn - $stockOut;
+            $product->save();
+        }
+    }
+
+    public function product()
+    {
         return $this->belongsTo(Product::class);
     }
 
-    public function outlet(){
+    public function outlet()
+    {
         return $this->belongsTo(Outlet::class);
     }
 }
