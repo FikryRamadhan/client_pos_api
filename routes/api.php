@@ -22,5 +22,5 @@ Route::prefix('auth')->group(function () {
 
 // Cashier Routes
 Route::middleware('auth:sanctum')->group(function () {
-    Route::apiResource('transactions', TransactionController::class)->only('index', 'store', 'show', 'destroy');
+    Route::apiResource('transactions', TransactionController::class)->only('index', 'store', 'show');
 });

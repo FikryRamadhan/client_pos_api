@@ -111,16 +111,16 @@ class TransactionController extends Controller
         return APIResponse::success('Transaction detail retrieved.', $transaction);
     }
 
-    public function destroy($id)
-    {
-        $transaction = Transaction::find($id);
+    // public function destroy($id)
+    // {
+    //     $transaction = Transaction::find($id);
 
-        if (!$transaction) {
-            return APIResponse::error('Transaction not found.', [], 404);
-        }
+    //     if (!$transaction) {
+    //         return APIResponse::error('Transaction not found.', [], 404);
+    //     }
 
-        $transaction->delete();
+    //     $transaction->delete();
 
-        return APIResponse::success('Transaction deleted successfully.');
-    }
+    //     return APIResponse::success('Transaction deleted successfully.');
+    // }
 }
