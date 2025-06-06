@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Outlet;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -14,38 +15,53 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        $outlets = 20;
+        $outletNames = [
+            'Kertosono',
+            'Warujayeng',
+            'Ketawang',
+            'Gading',
+            'Ngronggot',
+            'Bogo',
+            'Perak',
+            'Bulakrejo',
+            'Prambon',
+            'Pucangsimo',
+            'Baleturi',
+            'Munung',
+            'Tinggar',
+            'Jenar',
+            'Patianrowo',
+            'Tanjungkalang',
+            'Lengkong',
+            'Plosorejo',
+            'Sawahan',
+            'Ngasem',
+        ];
 
-        $users = [];
-
-        for ($i = 1; $i <= $outlets; $i++) {
-            $users[] = [
-                'name' => "Kasir $i",
-                'email' => "cashier$i@gmail.com",
+        foreach ($outletNames as $index => $name) {
+            $user = User::create([
+                'name' => "Kasir " . ($index + 1),
+                'email' => "cashier" . ($index + 1) . "@gmail.com",
                 'password' => Hash::make('foobarr'),
                 'phone_number' => '08762546271',
                 'role' => 'cashier',
-            ];
+            ]);
+
+            $user->outlet()->create([
+                'name' => $name,
+                'address' => "Jln. $name",
+                'capacity' => 100,
+            ]);
         }
 
-        $admins = [];
-
         for ($i = 1; $i <= 5; $i++) {
-            $admins[] = [
+            User::create([
                 'name' => "Admin $i",
                 'email' => "admin$i@gmail.com",
                 'password' => Hash::make('foobarr'),
                 'phone_number' => '08762546271',
                 'role' => 'admin',
-            ];
-        }
-
-        foreach ($admins as $admin) {
-            User::create($admin);
-        }
-
-        foreach ($users as $user) {
-            User::create($user);
+            ]);
         }
     }
 }
