@@ -21,6 +21,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone_number',
+        'role',
     ];
 
     /**
@@ -47,15 +49,13 @@ class User extends Authenticatable
     }
 
 
-    /**
-     * Relatiionship
-     */
+    public function outlet()
+    {
+        return $this->hasOne(Outlet::class);
+    }
 
-     public function outlet(){
-        return $this->belongsTo(Outlet::class, 'id_users');
-     }
-
-     public function transaksi(){
-        return $this->hasMany(Transaksi::class, 'id_kasir');
-     }
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
 }

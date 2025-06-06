@@ -6,9 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Outlet extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'user_id',
+        'name',
+        'address',
+        'capacity',
+    ];
 
-    public function kasir(){
-        return $this->hasMany(User::class, 'id_users');
+    public function cashier()
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

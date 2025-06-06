@@ -6,13 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    protected $guarded = [];
+    protected $fillable = [
+        'name',
+        'price',
+        'stock',
+        'description',
+    ];
 
-    public function stock(){
-        return $this->hasMany(Stock::class, 'id_product');
+    public function stocks(){
+        return $this->hasMany(Stock::class);
     }
 
-    public function TransaksiDetail(){
-        return $this->hasMany(TransaksiDetail::class, 'id_products');
+    public function detailTransactions(){
+        return $this->hasMany(TransactionDetail::class);
     }
 }
