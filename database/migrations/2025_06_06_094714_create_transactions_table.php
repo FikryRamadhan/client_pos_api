@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('cashier_id')->references('id')->on('users')->cascadeOnDelete();
             $table->foreignId('customer_id')->constrained();
-            $table->bigInteger('payment_total');
+            $table->decimal('total_price', 12, 2);
             $table->enum('payment_method', ['cash', 'debit', 'qr'])->default('cash');
             $table->timestamps();
         });
