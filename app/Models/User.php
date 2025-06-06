@@ -45,4 +45,17 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+
+    /**
+     * Relatiionship
+     */
+
+     public function outlet(){
+        return $this->belongsTo(Outlet::class, 'id_users');
+     }
+
+     public function transaksi(){
+        return $this->hasMany(Transaksi::class, 'id_kasir');
+     }
 }
