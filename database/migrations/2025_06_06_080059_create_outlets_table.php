@@ -13,9 +13,10 @@ return new class extends Migration
     {
         Schema::create('outlets', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_users')->constrained('users');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('name');
             $table->text('address');
+            $table->integer('capacity')->nullable();
             $table->timestamps();
         });
     }

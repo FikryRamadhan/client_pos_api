@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transaksi_details', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_transaksi');
-            $table->foreignId('id_products');
-            $table->bigInteger('amount');
-            $table->bigInteger('total_price');
+            $table->foreignId('cashier_id')->references('id')->on('users')->cascadeOnDelete();
+            $table->foreignId('customer_id')->constrained();
+            $table->bigInteger('payment_total');
+            $table->enum('payment_method', ['cash', 'debit', 'qr'])->default('cash');
             $table->timestamps();
         });
     }
@@ -26,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaksi_details');
+        Schema::dropIfExists('transactions');
     }
 };

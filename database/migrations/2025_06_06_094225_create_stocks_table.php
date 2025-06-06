@@ -11,12 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('transaksis', function (Blueprint $table) {
+        Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('id_kasir');
-            $table->foreignId('id_pelanggan');
-            $table->bigInteger('total_payment');
-            $table->enum('payment_method', ['cash', 'debit', 'qr'])->default('cash');
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('outlet_id')->constrained()->cascadeOnDelete();
+            $table->enum('type', ['in', 'out']);
+            $table->integer('quantity');
+            $table->text('note')->nullable();
             $table->timestamps();
         });
     }
@@ -26,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('transaksis');
+        Schema::dropIfExists('stocks');
     }
 };
