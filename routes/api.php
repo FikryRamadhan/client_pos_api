@@ -5,16 +5,17 @@ use App\Http\Controllers\API\Admin\LaporanController;
 use App\Http\Controllers\API\Admin\OutletController;
 use App\Http\Controllers\API\Admin\ProductController;
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\Cashier\ReportController;
 use App\Http\Controllers\API\Cashier\TransactionController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('logout', [AuthController::class, 'logout']);
-        Route::get('me', [AuthController::class, 'me']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/me', [AuthController::class, 'me']);
     });
 });
 
@@ -30,5 +31,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:admin')->prefix('admin')->group(function(){
         Route::apiResource('outlet', OutletController::class)->only('index', 'store', 'show', 'update', 'destroy');
         Route::apiResource('product', ProductController::class)->only('index', 'store', 'show', 'update', 'destroy');
+    });
+
+     Route::prefix('reports')->group(function () {
+        Route::get('/daily', [ReportController::class, 'dailyReport']);
+        Route::get('/monthly', [ReportController::class, 'monthlyReport']);
+        Route::get('/yearly', [ReportController::class, 'yearlyReport']);
     });
 });
