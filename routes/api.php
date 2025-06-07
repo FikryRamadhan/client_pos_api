@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\AuthController;
+use App\Http\Controllers\API\Cashier\ReportController;
 use App\Http\Controllers\API\Cashier\TransactionController;
 use App\Http\Controllers\API\ProductController;
 use Illuminate\Http\Request;
@@ -11,16 +12,21 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::prefix('auth')->group(function () {
-    Route::post('register', [AuthController::class, 'register']);
-    Route::post('login', [AuthController::class, 'login']);
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
 
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('logout', [AuthController::class, 'logout']);
-        Route::get('me', [AuthController::class, 'me']);
+        Route::post('/logout', [AuthController::class, 'logout']);
+        Route::get('/me', [AuthController::class, 'me']);
     });
 });
 
 // Cashier Routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('transactions', TransactionController::class)->only('index', 'store', 'show');
+    Route::prefix('reports')->group(function () {
+        Route::get('/daily', [ReportController::class, 'dailyReport']);
+        Route::get('/monthly', [ReportController::class, 'monthlyReport']);
+        Route::get('/yearly', [ReportController::class, 'yearlyReport']);
+    });
 });
