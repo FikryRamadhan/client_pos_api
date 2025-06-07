@@ -1,14 +1,12 @@
 <?php
 
+use App\Http\Controllers\API\Admin\DashboardController;
+use App\Http\Controllers\API\Admin\LaporanController;
+use App\Http\Controllers\API\Admin\OutletController;
+use App\Http\Controllers\API\Admin\ProductController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\Cashier\TransactionController;
-use App\Http\Controllers\API\ProductController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
 
 Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
@@ -23,4 +21,14 @@ Route::prefix('auth')->group(function () {
 // Cashier Routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('transactions', TransactionController::class)->only('index', 'store', 'show');
+
+    /**
+     * Admin Routes API
+     */
+    Route::get('dashboard', [DashboardController::class, 'laporan']);
+
+    Route::middleware('role:admin')->prefix('admin')->group(function(){
+        Route::apiResource('outlet', OutletController::class)->only('index', 'store', 'show', 'update', 'destroy');
+        Route::apiResource('product', ProductController::class)->only('index', 'store', 'show', 'update', 'destroy');
+    });
 });
