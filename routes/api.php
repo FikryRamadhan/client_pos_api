@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\API\Admin\CustomerController;
 use App\Http\Controllers\API\Admin\DashboardController;
 use App\Http\Controllers\API\Admin\LaporanController;
 use App\Http\Controllers\API\Admin\OutletController;
 use App\Http\Controllers\API\Admin\ProductController;
+use App\Http\Controllers\API\Admin\StockProductController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\Cashier\ReportController;
 use App\Http\Controllers\API\Cashier\TransactionController;
@@ -28,12 +30,14 @@ Route::middleware('auth:sanctum')->group(function () {
      */
     Route::get('dashboard', [DashboardController::class, 'laporan']);
 
-    Route::middleware('role:admin')->prefix('admin')->group(function(){
+    Route::prefix('admin')->group(function(){
+        Route::apiResource('customer', CustomerController::class)->only('index', 'store');
         Route::apiResource('outlet', OutletController::class)->only('index', 'store', 'show', 'update', 'destroy');
         Route::apiResource('product', ProductController::class)->only('index', 'store', 'show', 'update', 'destroy');
+        Route::apiResource('stock-product', StockProductController::class)->only('store');
     });
 
-     Route::prefix('reports')->group(function () {
+    Route::prefix('reports')->group(function () {
         Route::get('/daily', [ReportController::class, 'dailyReport']);
         Route::get('/monthly', [ReportController::class, 'monthlyReport']);
         Route::get('/yearly', [ReportController::class, 'yearlyReport']);

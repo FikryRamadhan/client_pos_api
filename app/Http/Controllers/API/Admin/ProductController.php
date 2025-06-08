@@ -28,9 +28,8 @@ class ProductController extends Controller
         DB::beginTransaction();
         try {
             $validated = $request->validate([
-                'name' => 'required|unique:products,name,',
+                'name' => 'required|unique:products,name',
                 'price' => 'required',
-                'stock' => 'required',
                 'description' => 'required',
             ]);
 
@@ -63,7 +62,6 @@ class ProductController extends Controller
             $validated = $request->validate([
                 'name' => 'required|unique:products,name,'.$product->name,
                 'price' => 'required',
-                'stock' => 'required',
                 'description' => 'required',
             ]);
 
