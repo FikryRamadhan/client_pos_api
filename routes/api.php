@@ -5,6 +5,7 @@ use App\Http\Controllers\API\Admin\DashboardController;
 use App\Http\Controllers\API\Admin\LaporanController;
 use App\Http\Controllers\API\Admin\OutletController;
 use App\Http\Controllers\API\Admin\ProductController;
+use App\Http\Controllers\API\Admin\ReportController as AdminReportController;
 use App\Http\Controllers\API\Admin\StockProductController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\Cashier\ReportController;
@@ -35,6 +36,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('outlet', OutletController::class)->only('index', 'store', 'show', 'update', 'destroy');
         Route::apiResource('product', ProductController::class)->only('index', 'store', 'show', 'update', 'destroy');
         Route::apiResource('stock-product', StockProductController::class)->only('store');
+
+        Route::prefix('report')->group(function () {
+            Route::get('/daily-export', [AdminReportController::class, 'exportReportByDate']);
+            Route::get('/yearly-export', [AdminReportController::class, 'exportReportByMonth']);
+            Route::get('/sort-by-date', [AdminReportController::class, 'sortByDate']);
+            Route::get('/sort-by-month', [AdminReportController::class, 'sortByMonth']);
+        });
     });
 
     Route::prefix('reports')->group(function () {
