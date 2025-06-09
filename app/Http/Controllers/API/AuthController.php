@@ -64,7 +64,7 @@ class AuthController extends Controller
             return APIResponse::success('User login successfully.', [
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'user' => $user->only(['id', 'name', 'email', 'role'])
+                'user' => array_merge($user->only(['id', 'name', 'email', 'role']), ['outlet_id' => $user->outlet->id])
             ]);
         } catch (\Illuminate\Validation\ValidationException $e) {
             return APIResponse::error('Validation failed.', $e->errors(), 422);

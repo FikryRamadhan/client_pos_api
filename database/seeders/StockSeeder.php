@@ -24,7 +24,7 @@ class StockSeeder extends Seeder
                     'product_id' => $product->id,
                     'outlet_id' => $outlet->id,
                     'type' => 'in',
-                    'quantity' => rand(50, 150), // stok awal antara 50 - 150
+                    'quantity' => rand(1, 10), // stok awal antara 1 - 10
                     'note' => 'Initial stock for ' . $product->name . ' at ' . $outlet->name,
                 ]);
             }
