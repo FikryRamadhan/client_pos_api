@@ -35,9 +35,9 @@ class ReportController extends Controller
             $filename = 'export-report-date/report_' . date('Y-m-d') . '.xlsx';
             $path = Excel::store($data, $filename);
 
-            return APIResponse::success('Report exported successfully', [
-                'file_path' => $path,
-                'file_name' => 'storage/' . $filename
+             return APIResponse::success('Report exported successfully', [
+                'file_status' => $path,
+                'file_path' => 'storage/' . $filename
             ], 200);
         } catch (Exception $e) {
             return APIResponse::error('Error', $e->getMessage(), 500);
@@ -64,8 +64,8 @@ class ReportController extends Controller
             $path = Excel::store($data, $filename);
 
             return APIResponse::success('Report exported successfully', [
-                'file_path' => $path,
-                'file_name' => 'storage/' . $filename
+                'file_status' => $path,
+                'file_path' => 'storage/' . $filename
             ], 200);
             if ($data->collection()->isEmpty()) {
                 return APIResponse::error('No data found for the given month and year', null, 404);

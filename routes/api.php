@@ -10,6 +10,7 @@ use App\Http\Controllers\API\Admin\StockProductController;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\Cashier\ReportController;
 use App\Http\Controllers\API\Cashier\TransactionController;
+use App\Http\Controllers\API\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('auth')->group(function () {
@@ -22,16 +23,23 @@ Route::prefix('auth')->group(function () {
     });
 });
 
-// Cashier Routes
 Route::middleware('auth:sanctum')->group(function () {
+    /**
+     * Cashier Routes
+     */
     Route::apiResource('transactions', TransactionController::class)->only('index', 'store', 'show');
+    Route::get('dashboard', [DashboardController::class, 'laporan']);
+
+    Route::prefix('reports')->group(function () {
+        Route::get('/daily', [ReportController::class, 'dailyReport']);
+        Route::get('/monthly', [ReportController::class, 'monthlyReport']);
+        Route::get('/yearly', [ReportController::class, 'yearlyReport']);
+    });
 
     /**
      * Admin Routes API
      */
-    Route::get('dashboard', [DashboardController::class, 'laporan']);
-
-    Route::prefix('admin')->group(function(){
+    Route::prefix('admin')->group(function () {
         Route::apiResource('customer', CustomerController::class)->only('index', 'store');
         Route::apiResource('outlet', OutletController::class)->only('index', 'store', 'show', 'update', 'destroy');
         Route::apiResource('product', ProductController::class)->only('index', 'store', 'show', 'update', 'destroy');
@@ -45,9 +53,11 @@ Route::middleware('auth:sanctum')->group(function () {
         });
     });
 
-    Route::prefix('reports')->group(function () {
-        Route::get('/daily', [ReportController::class, 'dailyReport']);
-        Route::get('/monthly', [ReportController::class, 'monthlyReport']);
-        Route::get('/yearly', [ReportController::class, 'yearlyReport']);
+    /**
+     * Route 2 role
+     */
+    Route::prefix('update')->group(function(){
+        Route::put('profile', [ProfileController::class, 'updateProfile']);
+        Route::put('password', [ProfileController::class, 'updatePassword']);
     });
 });
