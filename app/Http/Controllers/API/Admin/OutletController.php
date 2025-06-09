@@ -98,6 +98,7 @@ class OutletController extends Controller
                         return [
                             'quantity' => $stock->quantity,
                             'product_name' => $stock->product->name ?? null,
+                            'product_price' => $stock->product->price ?? null
                         ];
                     }),
                 ];
