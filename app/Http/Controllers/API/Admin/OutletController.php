@@ -95,6 +95,7 @@ class OutletController extends Controller
                 $available = $stockIn - $stockOut;
 
                 return [
+                    'id' => $firstItem->product->id ?? null,
                     'product_name' => $firstItem->product->name ?? null,
                     'product_price' => $firstItem->product->price ?? null,
                     'quantity' => $available,
