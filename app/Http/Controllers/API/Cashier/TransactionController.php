@@ -93,7 +93,34 @@ class TransactionController extends Controller
 
             DB::commit();
 
-            return APIResponse::success('Transaction created with multiple products.', $transaction, 201);
+            $transaction->load(['cashier:id,name,phone_number', 'customer:id,name,phone_number', 'transactionDetails.product:id,name,price']);
+
+            $formattedResponse = [
+                'transaction_id' => $transaction->id,
+                'cashier' => [
+                    'id' => $transaction->cashier->id,
+                    'name' => $transaction->cashier->name,
+                    'phone_number' => $transaction->cashier->phone_number,
+                ],
+                'customer' => [
+                    'id' => $transaction->customer->id,
+                    'name' => $transaction->customer->name,
+                    'phone_number' => $transaction->customer->phone_number,
+                ],
+                'payment_method' => $transaction->payment_method,
+                'total_price' => $transaction->total_price,
+                'products' => $transaction->transactionDetails->map(function ($detail) {
+                    return [
+                        'id' => $detail->product->id,
+                        'name' => $detail->product->name,
+                        'price' => (float) $detail->product->price,
+                        'quantity' => $detail->quantity,
+                        'subtotal' => (float) $detail->subtotal,
+                    ];
+                })->toArray()
+            ];
+
+            return APIResponse::success('Transaction created successfully.', $formattedResponse, 201);
         } catch (\Exception $e) {
             DB::rollBack();
             return APIResponse::error('Transaction failed.', ['error' => $e->getMessage()], 500);
