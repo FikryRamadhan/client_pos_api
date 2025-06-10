@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class Stock extends Model
 {
@@ -16,6 +17,18 @@ class Stock extends Model
 
     protected static function booted()
     {
+        static::creating(function ($stock) {
+            if ($stock->type === 'in') {
+                $outlet = Outlet::find($stock->outlet_id);
+                $currentStock = Stock::where('outlet_id', $stock->outlet_id)
+                    ->sum(DB::raw("CASE WHEN type = 'in' THEN quantity WHEN type = 'out' THEN -quantity ELSE 0 END"));
+
+                if ($currentStock + $stock->quantity > $outlet->capacity) {
+                    throw new \Exception('Stok melebihi kapasitas outlet.');
+                }
+            }
+        });
+
         static::created(function ($stock) {
             self::updateProductStock($stock->product_id);
         });
