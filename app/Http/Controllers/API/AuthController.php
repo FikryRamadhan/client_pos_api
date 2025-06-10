@@ -94,7 +94,7 @@ class AuthController extends Controller
     public function me(Request $request)
     {
         return APIResponse::success('User profile retrieved successfully.', [
-            'user' => $request->user()->only(['id', 'name', 'email', 'role']),
+            'user' => $request->user()->only(['id', 'name', 'email', 'phone_number', 'role']),
         ]);
     }
 }
