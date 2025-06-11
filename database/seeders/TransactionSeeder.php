@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use Carbon\Carbon;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -17,7 +18,7 @@ class TransactionSeeder extends Seeder
             'customer_id' => 1,
             'total_price' => 50000,
             'payment_method' => 'cash',
-            'created_at' => '2025-04-01'
+            'created_at' => Carbon::now()
         ])->transactionDetails()->createMany([
             [
                 'product_id' => 1,
@@ -36,7 +37,7 @@ class TransactionSeeder extends Seeder
             'customer_id' => 2,
             'total_price' => 75000,
             'payment_method' => 'cash',
-            'created_at' => '2025-04-02'
+            'created_at' => Carbon::now()
         ])->transactionDetails()->createMany([
             [
                 'product_id' => 3,

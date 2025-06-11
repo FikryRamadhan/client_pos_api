@@ -35,7 +35,7 @@ class ReportController extends Controller
             $filename = 'export-report-date/report_' . date('Y-m-d') . '.xlsx';
             $path = Excel::store($data, $filename);
 
-             return APIResponse::success('Report exported successfully', [
+            return APIResponse::success('Report exported successfully', [
                 'file_status' => $path,
                 'file_path' => 'storage/' . $filename
             ], 200);
@@ -124,20 +124,19 @@ class ReportController extends Controller
     public function sortByMonth(Request $request)
     {
         try {
-            $month = $request->query('month');
-            $year = $request->query('year');
+            $month = $request->query('month', date('Y-m'));
 
-            if (!$month || !$year) {
-                return APIResponse::error('Validation', 'Month and year are required', 422);
+            if (!preg_match('/^\d{4}-\d{2}$/', $month)) {
+                return APIResponse::error('Invalid month format. Use YYYY-MM.', [], 422);
             }
 
-            if (!checkdate($month, 1, $year)) {
-                return APIResponse::error('Validation', 'Invalid month or year', 422);
-            }
+            $year = substr($month, 0, 4);
+            $monthNumber = substr($month, 5, 2);
+
 
             $result = Transaction::with(['cashier.outlet', 'customer', 'transactionDetails'])
                 ->whereYear('created_at', $year)
-                ->whereMonth('created_at', $month)
+                ->whereMonth('created_at', $monthNumber)
                 ->get();
 
             $formatted = $result->map(function ($item) {
