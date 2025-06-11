@@ -17,8 +17,35 @@ class TransactionController extends Controller
 {
     public function index()
     {
-        $transactions = Transaction::with(['cashier', 'customer', 'transactionDetails.product'])->get();
-        return APIResponse::success('List of transactions retrieved successfully.', $transactions);
+        $transactions = Transaction::with(['cashier.outlet', 'customer', 'transactionDetails.product'])->get();
+
+        $formatted = $transactions->map(function ($transaction) {
+            return [
+                'id' => $transaction->id,
+                'total_price' => $transaction->total_price,
+                'payment_method' => $transaction->payment_method,
+                'created_at' => $transaction->created_at->toDateTimeString(),
+                'cashier' => [
+                    'id' => $transaction->cashier->id,
+                    'name' => $transaction->cashier->name,
+                    'phone_number' => $transaction->cashier->phone_number,
+                ],
+                'customer' => [
+                    'id' => $transaction->customer->id,
+                    'name' => $transaction->customer->name,
+                    'phone_number' => $transaction->customer->phone_number,
+                ],
+                'transaction_details' => $transaction->transactionDetails->map(function ($detail) {
+                    return [
+                        'product_name' => $detail->product->name,
+                        'quantity' => $detail->quantity,
+                        'subtotal' => $detail->subtotal,
+                    ];
+                }),
+            ];
+        });
+
+        return APIResponse::success('List of transactions retrieved successfully.', $formatted);
     }
 
     public function store(Request $request)
@@ -129,13 +156,40 @@ class TransactionController extends Controller
 
     public function show($id)
     {
-        $transaction = Transaction::with(['cashier', 'customer', 'transactionDetails.product'])->find($id);
+        $transaction = Transaction::with(['cashier.outlet', 'customer', 'transactionDetails.product'])->find($id);
 
         if (!$transaction) {
             return APIResponse::error('Transaction not found.', [], 404);
         }
 
-        return APIResponse::success('Transaction detail retrieved.', $transaction);
+        $formattedResponse = [
+            'id' => $transaction->id,
+            'total_price' => $transaction->total_price,
+            'payment_method' => $transaction->payment_method,
+            'date' => $transaction->created_at,
+            'cashier' => [
+                'id' => $transaction->cashier->id,
+                'name' => $transaction->cashier->name,
+                'phone_number' => $transaction->cashier->phone_number,
+                'outlet' => $transaction->cashier->outlet ? [
+                    'id' => $transaction->cashier->outlet->id,
+                    'name' => $transaction->cashier->outlet->name,
+                    'address' => $transaction->cashier->outlet->address,
+                ] : null,
+            ],
+            'customer' => $transaction->customer->only(['id', 'name', 'phone_number', 'address']),
+            'transaction_details' => $transaction->transactionDetails->map(function ($detail) {
+                return [
+                    'id' => $detail->product->id,
+                    'name' => $detail->product->name,
+                    'price' => (float) $detail->product->price,
+                    'quantity' => $detail->quantity,
+                    'subtotal' => (float) $detail->subtotal,
+                ];
+            })
+        ];
+
+        return APIResponse::success('Transaction detail retrieved.', $formattedResponse);
     }
 
     // public function destroy($id)
