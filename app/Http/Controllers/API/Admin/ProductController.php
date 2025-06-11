@@ -15,7 +15,7 @@ class ProductController extends Controller
     public function index()
     {
         try {
-            $data = Product::all();
+            $data = Product::select('id', 'name', 'price', 'stock', 'description')->get();
 
             return APIResponse::success('Get data prosuct sucsess', $data);
         } catch (Exception $e) {

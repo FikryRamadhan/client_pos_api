@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API\Admin;
 use App\Helpers\APIResponse;
 use App\Http\Controllers\Controller;
 use App\Models\Outlet;
+use App\Models\Stock;
 use Exception;
 use Illuminate\Foundation\Exceptions\Renderer\Exception as RendererException;
 use Illuminate\Http\Request;
@@ -79,33 +80,43 @@ class OutletController extends Controller
     public function show($id)
     {
         try {
-            $outlets = Outlet::where('id', $id)->with(['cashier:id,name,phone_number', 'stock' => function ($q) {
-                $q->select('id', 'product_id', 'outlet_id', 'quantity'); // hanya ambil field ini
-            }, 'stock.product:id,name'])->get(); // ambil hanya id dan name dari product
+            $outlet = Outlet::with(['cashier:id,name,phone_number'])->findOrFail($id);
 
-            // Mapping data agar output sesuai keinginan
-            $data = $outlets->map(function ($outlet) {
+            // Ambil semua stok (baik in maupun out) dari outlet
+            $stocks = Stock::where('outlet_id', $id)
+                ->with('product:id,name,price')
+                ->get();
+
+            // Group by product_id lalu hitung stok akhir
+            $groupedStocks = $stocks->groupBy('product_id')->map(function ($items) {
+                $firstItem = $items->first();
+                $stockIn = $items->where('type', 'in')->sum('quantity');
+                $stockOut = $items->where('type', 'out')->sum('quantity');
+                $available = $stockIn - $stockOut;
+
                 return [
-                    'id' => $outlet->id,
-                    'name' => $outlet->name,
-                    'address' => $outlet->address,
-                    'capacity' => $outlet->capacity,
-                    'cashier' => [
-                        'name' => $outlet->cashier->name ?? null,
-                        'phone_number' => $outlet->cashier->phone_number ?? null,
-                    ],
-                    'stock' => $outlet->stock->map(function ($stock) {
-                        return [
-                            'quantity' => $stock->quantity,
-                            'product_name' => $stock->product->name ?? null,
-                            'product_price' => $stock->product->price ?? null
-                        ];
-                    }),
+                    'id' => $firstItem->product->id ?? null,
+                    'product_name' => $firstItem->product->name ?? null,
+                    'product_price' => $firstItem->product->price ?? null,
+                    'quantity' => $available,
                 ];
-            });
-            return APIResponse::success('Get data by id sucsess', $data);
-        } catch (Exception $e) {
-            return APIResponse::error('error', $e->getMessage(), 500);
+            })->values(); // reset index
+
+            $data = [
+                'id' => $outlet->id,
+                'name' => $outlet->name,
+                'address' => $outlet->address,
+                'capacity' => $outlet->capacity,
+                'cashier' => [
+                    'name' => $outlet->cashier->name ?? null,
+                    'phone_number' => $outlet->cashier->phone_number ?? null,
+                ],
+                'stock' => $groupedStocks,
+            ];
+
+            return APIResponse::success('Get data by id success', $data);
+        } catch (\Exception $e) {
+            return APIResponse::error('Error', $e->getMessage(), 500);
         }
     }
 
