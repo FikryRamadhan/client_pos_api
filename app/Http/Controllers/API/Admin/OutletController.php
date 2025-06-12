@@ -34,6 +34,7 @@ class OutletController extends Controller
                     ],
                     'stock' => $outlet->stock->map(function ($stock) {
                         return [
+                            'product_id' => $stock->product->id,
                             'quantity' => $stock->quantity,
                             'product_name' => $stock->product->name ?? null,
                         ];
